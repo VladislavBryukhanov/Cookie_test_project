@@ -1,0 +1,12 @@
+@font-face {
+  font-family: Gothic;
+  src: url(../fonts/gothic.ttf);
+}
+
+.score {
+  font-family: Gothic;
+  .scoreDigit {
+    text-align: center;
+    font-size: 34px;
+  }
+}
