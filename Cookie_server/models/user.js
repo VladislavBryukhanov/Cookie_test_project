@@ -6,20 +6,20 @@ const User = sequelize.define('user', {
         type: Sequelize.STRING,
         allowNull: false,
         unique: true,
-        // validate: {
-        //     len: {
-        //         args: [1, 20]
-        //     }
-        // }
+        validate: {
+            len: {
+                args: [1, 20]
+            }
+        }
     },
     password: {
         type: Sequelize.STRING,
         allowNull: false,
-        // validate: {
-        //     len: {
-        //         args: [8, 32]
-        //     },
-        // }
+        validate: {
+            len: {
+                args: [8, 32]
+            }
+        }
     },
     session_hash: {
         type: Sequelize.STRING,

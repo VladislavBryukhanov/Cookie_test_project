@@ -10,40 +10,22 @@ class Score extends Component {
         super(props);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         axios.get('/score/getScore')
             .then( res => {
                 this.props.getScore(res.data.scoreCounter);
             });
-        // axios.get('/score/getScore')
-        //     .then(res => {
-        //         // console.log(res.data);
-        //     })
-        //     .catch(err => {
-        //         if (err.response.status === 401) {
-        //             this.props.history.push('/');
-        //         }
-        //     });
-    }
 
-    componentDidMount() {
         window.onbeforeunload = () => {
             // is refresh page - will saved, if close - will not
-            // axios.post('/score/saveScore', {scoreCounter: this.props.scoreCounter});
             this.props.saveScore();
+            // axios.post('/score/saveScore', {scoreCounter: this.props.scoreCounter});
         }
     }
 
     componentWillUnmount() {
         window.onbeforeunload = null;
     }
-
-    // saveScore = () => {
-    //     axios.post('/score/saveScore', this.props.score)
-    //         .then(res => {
-    //             console.log(res.data);
-    //         });
-    // }
 
     render() {
         return(
