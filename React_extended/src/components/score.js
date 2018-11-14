@@ -12,10 +12,10 @@ class Score extends Component {
     }
 
     componentDidMount() {
-        this.props.getScore(this.props.scoreCounter);
+        this.props.getScore();
 
         this.intervalId = setInterval(() => {
-            this.props.saveScore();
+            this.props.saveScore(this.props.scoreCounter);
         }, 10000)
     }
 

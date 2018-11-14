@@ -44,6 +44,7 @@ export const signIn = (action) => {
 
 export const logOut = () => {
     localStorage.removeItem('AuthToken');
+    localStorage.removeItem('scoreCounter');
     axios.defaults.headers.authorization = ``;
     return {
         type: 'logOut', isAuthorized: false
