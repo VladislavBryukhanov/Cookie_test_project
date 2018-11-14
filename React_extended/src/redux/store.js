@@ -1,7 +1,8 @@
 import { createStore, applyMiddleware } from 'redux';
-import { handleActions } from 'redux-actions';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import ReduxThunk from 'redux-thunk'
+import { handleActions } from 'redux-actions';
+import createSagaMiddleware from 'redux-saga';
+import sagas from './sagas';
 
 const initData = {
     scoreCounter: 0,
@@ -45,4 +46,7 @@ const Reducer = (state = initData, action) => {
     }
 };
 
-export default createStore(Reducer, composeWithDevTools(applyMiddleware(ReduxThunk)));
+const sagaMiddleware = createSagaMiddleware();
+
+export default createStore(Reducer, composeWithDevTools(applyMiddleware(sagaMiddleware)));
+sagaMiddleware.run(sagas);

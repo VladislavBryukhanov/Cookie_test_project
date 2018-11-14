@@ -52,11 +52,11 @@ class Auth extends Component {
 const mapDispatchToProps = (dispatch) => ({
     signIn: (e, data) => {
         e.preventDefault();
-        dispatch(signInRequest(data));
+        dispatch({type: 'signInRequest', data: data});
     },
     signUp: (e, data) => {
         e.preventDefault();
-        dispatch(signUpRequest(data));
+        dispatch({type: 'signUpRequest', data: data});
     }
 })
 

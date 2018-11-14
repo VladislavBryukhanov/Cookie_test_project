@@ -1,11 +1,8 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import axios from 'axios';
 import { withRouter } from 'react-router-dom';
 import { compose } from 'redux';
-import {getScoreRequest, saveScoreRequest} from '../redux/actions';
 
-//TODO to reducer
 class Score extends Component {
     constructor(props) {
         super(props);
@@ -40,10 +37,10 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     saveScore: (scoreCounter) => {
-        dispatch(saveScoreRequest(scoreCounter));
+        dispatch({type: 'saveScoreRequest', scoreCounter: scoreCounter});
     },
     getScore: () => {
-        dispatch(getScoreRequest());
+        dispatch({type: 'getScoreRequest'})
     }
 });
 
