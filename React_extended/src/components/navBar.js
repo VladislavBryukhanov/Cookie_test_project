@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
+import {logOut} from "../redux/actions";
 
 class Navbar extends Component {
     render() {
@@ -14,7 +15,7 @@ class Navbar extends Component {
 
 const mapDispatchToProps = (dispatch) => ({
     logOut: () => {
-        dispatch({type: "logOut"});
+        dispatch(logOut())
     }
 });
 

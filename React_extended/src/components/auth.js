@@ -2,8 +2,8 @@ import React, {Component} from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { signInRequest, signUpRequest} from "../redux/actions";
 
-//TODO in & up = one component
 class Auth extends Component {
 
     constructor(props) {
@@ -22,22 +22,6 @@ class Auth extends Component {
         this.setState({password: e.target.value});
     }
 
-    onSignIn = (e) => {
-        e.preventDefault();
-        axios.post('/signIn', this.state)
-            .then(res => {
-                this.props.signIn(res.data.token);
-            })
-    }
-
-    onSignUp = (e) => {
-        e.preventDefault();
-        axios.post('/signUp', this.state)
-            .then(res => {
-                this.props.signIn(res.data.token);
-            })
-    }
-
     render() {
         return (
             !this.props.isSignUp ?
@@ -47,7 +31,7 @@ class Auth extends Component {
                     <input onChange={this.onLoginChange} value={this.state.login} placeholder="login"/>
                     <input onChange={this.onPasswordChange} value={this.state.password} placeholder="password"/>
                     <hr/>
-                    <button onClick={this.onSignIn}>Sign in</button>
+                    <button onClick={(e) => this.props.signIn(e, this.state)}>Sign in</button>
                     |
                     <Link to="/signUp">Sign up</Link>
                 </form>
@@ -59,15 +43,20 @@ class Auth extends Component {
                     <input onChange={this.onLoginChange} value={this.state.login} placeholder="login"/>
                     <input onChange={this.onPasswordChange} value={this.state.password} placeholder="password"/>
                     <hr/>
-                    <button onClick={this.onSignUp}>Sign up</button>
+                    <button onClick={(e) => this.props.signUp(e, this.state)}>Sign up</button>
                 </form>
             </div>
         )
     }
 }
 const mapDispatchToProps = (dispatch) => ({
-    signIn: (token) => {
-        dispatch({type: "signIn", token: token});
+    signIn: (e, data) => {
+        e.preventDefault();
+        dispatch(signInRequest(data));
+    },
+    signUp: (e, data) => {
+        e.preventDefault();
+        dispatch(signUpRequest(data));
     }
 })
 

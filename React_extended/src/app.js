@@ -8,6 +8,7 @@ import { Switch, Route, Redirect } from 'react-router-dom'
 import Auth from "./components/auth";
 import Navbar from "./components/navBar";
 import {connect} from 'react-redux';
+import {signIn} from './redux/actions';
 
 class App extends Component {
     componentDidMount() {
@@ -20,30 +21,30 @@ class App extends Component {
 
     render() {
         return (
-                <Switch>
-                    {
-                        this.props.isAuthorized ? (
-                            <>
-                                <Redirect from="/" to="/game"/>
-                                <Route exact path="/game" render={()=>(
-                                    <>
-                                        <Navbar/>
-                                        <div className="appBody">
-                                            <Cookie/>
-                                            <Score/>
-                                        </div>
-                                    </>
-                                )} />
-                            </>
-                        ) : (
-                            <>
-                                <Redirect exact from="/game" to="/"/>
-                                <Route path="/signUp" component={()=><Auth isSignUp={true}/>}/>
-                                <Route exact path="/" component={Auth}/>
-                            </>
-                        )
-                    }
-                </Switch>
+            <Switch>
+                {
+                    this.props.isAuthorized ? (
+                        <>
+                            <Redirect from="/" to="/game"/>
+                            <Route exact path="/game" render={()=>(
+                                <>
+                                    <Navbar/>
+                                    <div className="appBody">
+                                        <Cookie/>
+                                        <Score/>
+                                    </div>
+                                </>
+                            )} />
+                        </>
+                    ) : (
+                        <>
+                            <Redirect exact from="/game" to="/"/>
+                            <Route path="/signUp" component={()=><Auth isSignUp={true}/>}/>
+                            <Route exact path="/" component={Auth}/>
+                        </>
+                    )
+                }
+            </Switch>
         )
     }
 }
@@ -54,7 +55,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     signIn: () => {
-        dispatch({type: "signIn", isLocalToken: true})
+        dispatch(signIn({isLocalToken: true}))
     }
 })
 

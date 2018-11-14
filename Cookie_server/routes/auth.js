@@ -5,7 +5,6 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const secret = require('../secret');
 const Score = require('../models/score');
-const spread = require('bluebird').spread;
 
 const signIn = (user) => {
     let token = jwt.sign(
@@ -14,8 +13,8 @@ const signIn = (user) => {
         {expiresIn: 365 * 24 * 60 * 60}
     );
     return {
-        token: token,
-        user: user
+        // user: user,
+        token: token
     };
 } ;
 

@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import axios from 'axios';
 import { withRouter } from 'react-router-dom';
 import { compose } from 'redux';
+import {getScoreRequest, saveScoreRequest} from '../redux/actions';
 
 //TODO to reducer
 class Score extends Component {
@@ -11,20 +12,15 @@ class Score extends Component {
     }
 
     componentDidMount() {
-        axios.get('/score/getScore')
-            .then( res => {
-                this.props.getScore(res.data.scoreCounter);
-            });
+        this.props.getScore(this.props.scoreCounter);
 
-        window.onbeforeunload = () => {
-            // is refresh page - will saved, if close - will not
+        this.intervalId = setInterval(() => {
             this.props.saveScore();
-            // axios.post('/score/saveScore', {scoreCounter: this.props.scoreCounter});
-        }
+        }, 10000)
     }
 
     componentWillUnmount() {
-        window.onbeforeunload = null;
+        clearInterval(this.intervalId);
     }
 
     render() {
@@ -43,11 +39,11 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    saveScore: () => {
-        dispatch({type: 'saveScore'});
+    saveScore: (scoreCounter) => {
+        dispatch(saveScoreRequest(scoreCounter));
     },
-    getScore: (scoreCounter) => {
-        dispatch({type: 'getScore', scoreCounter: scoreCounter});
+    getScore: () => {
+        dispatch(getScoreRequest());
     }
 });
 
