@@ -1,7 +1,5 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import { withRouter } from 'react-router-dom';
-import { compose } from 'redux';
 
 class Score extends Component {
     constructor(props) {
@@ -32,7 +30,7 @@ class Score extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    scoreCounter: state.scoreCounter
+    scoreCounter: state.scoreReducer.scoreCounter
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -44,7 +42,4 @@ const mapDispatchToProps = (dispatch) => ({
     }
 });
 
-export default compose(
-    withRouter,
-    connect(mapStateToProps, mapDispatchToProps)
-)(Score);
+export default connect(mapStateToProps, mapDispatchToProps)(Score);

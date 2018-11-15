@@ -16,7 +16,7 @@ class Cookie extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    scoreCounter: state.scoreCounter
+    scoreCounter: state.scoreReducer.scoreCounter
 });
 
 const mapDispatchToProps = (dispatch) => ({

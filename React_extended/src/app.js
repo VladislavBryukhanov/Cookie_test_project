@@ -1,9 +1,6 @@
 import React, {Component} from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
-import { withRouter } from 'react-router';
-import {compose} from 'redux';
-import {connect} from 'react-redux';
-import {signIn} from './redux/actions';
+import { connect } from 'react-redux';
 
 import Cookie from './components/cookie';
 import Score from './components/score';
@@ -16,10 +13,8 @@ import '../public/css/score.scss';
 class App extends Component {
 
     componentDidMount() {
-        if (!this.props.isAuthorized) {
-            if (localStorage.getItem('AuthToken')) {
-                this.props.signIn();
-            }
+        if (localStorage.getItem('AuthToken')) {
+            this.props.signIn();
         }
     }
 
@@ -27,13 +22,13 @@ class App extends Component {
         '/game'
     ]
 
-    publicRoutes = [
+    authRoutes = [
         '/',
         '/signUp'
     ]
 
     routerGuard = () => {
-        let targetRoute = this.publicRoutes;
+        let targetRoute = this.authRoutes;
         if (this.props.isAuthorized) {
             targetRoute = this.privateRoutes;
         }
@@ -74,16 +69,13 @@ class App extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    isAuthorized: state.isAuthorized
+    isAuthorized: state.authReducer.isAuthorized
 });
 
 const mapDispatchToProps = (dispatch) => ({
     signIn: () => {
-        dispatch(signIn({isLocalToken: true}))
+        dispatch({type: 'signIn'})
     }
 });
 
-export default compose(
-    withRouter,
-    connect(mapStateToProps, mapDispatchToProps)
-)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);

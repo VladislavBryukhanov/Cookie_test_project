@@ -1,8 +1,6 @@
 import React, {Component} from 'react';
-import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { signInRequest, signUpRequest} from "../redux/actions";
 
 class Auth extends Component {
 

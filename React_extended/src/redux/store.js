@@ -1,6 +1,5 @@
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import { handleActions } from 'redux-actions';
 import createSagaMiddleware from 'redux-saga';
 import sagas from './sagas';
 
@@ -9,23 +8,54 @@ const initData = {
     isAuthorized: false
 };
 
-const Reducer = handleActions({
-    saveScore: (state) => state, // just info about saving
+const scoreReducer = (state = {scoreCounter: initData.scoreCounter}, action) => {
+    switch (action.type) {
+        case 'saveScore': {
+            return state;
+        }
+        case 'getScore': {
+            return {
+                ...state, scoreCounter: action.scoreCounter
+            }
+        }
+        case 'increment': {
+            return {
+                ...state, scoreCounter: action.scoreCounter
+            }
+        }
+        default: {
+            return state;
+        }
+    }
+};
 
-    getScore: (state, action) =>
-        ({...state, scoreCounter: action.scoreCounter}),
+const authReducer = (state = {isAuthorized: initData.isAuthorized}, action) => {
+    switch (action.type) {
+        case 'signIn': {
+            return {
+                ...state, isAuthorized: true
+            }
+        }
+        case 'logOut': {
+            localStorage.removeItem('AuthToken');
+            localStorage.removeItem('scoreCounter');
+            return {
+                ...state, isAuthorized: false
+            }
+        }
+        default: {
+            return state;
+        }
+    }
+};
 
-    increment: (state, action) =>
-        ({...state, scoreCounter: action.scoreCounter}),
-
-    signIn: (state, action) =>
-        ({...state, isAuthorized: action.isAuthorized}),
-
-    logOut: (state, action) =>
-        ({...state, isAuthorized: action.isAuthorized}),
-}, initData);
 
 const sagaMiddleware = createSagaMiddleware();
 
-export default createStore(Reducer, composeWithDevTools(applyMiddleware(sagaMiddleware)));
+export default createStore(
+    combineReducers({
+        scoreReducer,
+        authReducer
+    }),
+    composeWithDevTools(applyMiddleware(sagaMiddleware)));
 sagaMiddleware.run(sagas);
