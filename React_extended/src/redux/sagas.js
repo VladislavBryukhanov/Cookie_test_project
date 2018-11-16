@@ -19,7 +19,6 @@ function* requestWrapper (requestType, requestUrl, requestData, headers) {
             yield put({type: 'logOut'})
         }
     }
-
 }
 
 function authHeader() {
@@ -34,15 +33,22 @@ function authHeader() {
 function* signInRequest(action) {
     let req = yield requestWrapper(requestType.post, '/signIn', action.data);
     let token = req.data.token;
+    let user = req.data.user;
     localStorage.setItem('AuthToken', token);
-    yield put({type: 'signIn'});
+    yield put({type: 'signIn', user: user});
 }
 
 function* signUpRequest(action) {
     let req = yield requestWrapper(requestType.post, '/signUp', action.data);
     let token = req.data.token;
+    let user = req.data.user;
     localStorage.setItem('AuthToken', token);
-    yield put({type: 'signIn'});
+    yield put({type: 'signIn', user: user});
+}
+
+function* getProfileRequest() {
+    let req = yield requestWrapper(requestType.get, '/user/getProfile', authHeader());
+    yield put({type: 'signIn', user: req.data});
 }
 
 function* getScoreRequest() {
@@ -77,9 +83,24 @@ function* saveScoreRequest(action) {
     yield put({type: 'saveScore'})
 }
 
+function* logOutRequest(action) {
+    yield saveScoreRequest(action);
+    yield put({type: 'logOut'});
+}
+
+function* editProfileRequest(action) {
+    let req = yield requestWrapper(requestType.put, '/user/editProfile',
+        action.data, authHeader());
+    yield put({type: 'editProfile', user: req.data})
+}
+
+
 export default function* sagas() {
     yield takeLatest('signUpRequest', signUpRequest);
     yield takeLatest('signInRequest', signInRequest);
+    yield takeLatest('getProfileRequest', getProfileRequest);
     yield takeLatest('getScoreRequest', getScoreRequest);
     yield takeLatest('saveScoreRequest', saveScoreRequest);
+    yield takeLatest('logOutRequest', logOutRequest);
+    yield takeLatest('editProfileRequest', editProfileRequest);
 }

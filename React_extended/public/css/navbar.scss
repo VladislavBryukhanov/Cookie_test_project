@@ -1,0 +1,92 @@
+.navBar {
+  font-family: Gothic;
+
+  z-index: 3;
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 0px 5px 23px 1px grey;
+  //margin-bottom: 20px;
+
+  position: fixed;
+  //z-index: -1;
+  //width: 100%;
+  width: 100%;
+  margin: auto;
+  top: 0;
+
+
+  a:hover {
+    //text-decoration: underline;
+    color: brown;
+    font-style: inherit;
+    text-decoration: line-through;
+    cursor: pointer;
+  }
+  a {
+    text-decoration: none;
+  }
+
+
+  .profile {
+    margin: 10px 0;
+    text-align: right;
+    display: inline-block;
+    width: 50%;
+
+    > * {
+      vertical-align: middle;
+    }
+
+    .username {
+      color: firebrick;
+      font-size: 21px;
+      >:hover {
+        //text-decoration: underline;
+        color: #497799;
+      }
+    }
+
+    .userAvatar {
+      border-radius: 5px;
+      height: 50px;
+      box-shadow: 2px 3px 17px 2px grey;
+      margin: 0 20px;
+      cursor: pointer;
+    }
+    .userAvatar:hover {
+      box-shadow: 2px 3px 17px 2px black;
+    }
+
+    .logOutBtn {
+      background: none;
+      border: none;
+      color: grey;
+      cursor: pointer;
+      font-size: 18px;
+      margin: auto 18px;
+      font-family: inherit;
+    }
+
+  }
+
+
+  .navigation {
+    text-align: left;
+    display: inline-block;
+    width: calc(50% - 30px);
+    vertical-align: middle;
+    margin-left: 30px;
+
+    a {
+      margin: 0 20px;
+      font-size: 20px;
+      color: #5682a3;
+    }
+
+    a:hover {
+      //text-decoration: underline;
+      color: #497799;
+    }
+  }
+
+}

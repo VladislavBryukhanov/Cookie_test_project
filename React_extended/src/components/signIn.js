@@ -22,7 +22,6 @@ class Auth extends Component {
 
     render() {
         return (
-            !this.props.isSignUp ?
             <div>
                 <h1>Sign in</h1>
                 <form>
@@ -34,16 +33,6 @@ class Auth extends Component {
                     <Link to="/signUp">Sign up</Link>
                 </form>
             </div>
-                :
-            <div>
-                <h1>Sign up</h1>
-                <form>
-                    <input onChange={this.onLoginChange} value={this.state.login} placeholder="login"/>
-                    <input onChange={this.onPasswordChange} value={this.state.password} placeholder="password"/>
-                    <hr/>
-                    <button onClick={(e) => this.props.signUp(e, this.state)}>Sign up</button>
-                </form>
-            </div>
         )
     }
 }
@@ -51,10 +40,6 @@ const mapDispatchToProps = (dispatch) => ({
     signIn: (e, data) => {
         e.preventDefault();
         dispatch({type: 'signInRequest', data: data});
-    },
-    signUp: (e, data) => {
-        e.preventDefault();
-        dispatch({type: 'signUpRequest', data: data});
     }
 })
 

@@ -4,22 +4,29 @@ import { connect } from 'react-redux';
 
 import Cookie from './components/cookie';
 import Score from './components/score';
-import Auth from "./components/auth";
+import SignIn from "./components/signIn";
+import ProfileEditor from "./components/profileEditor";
 import Navbar from "./components/navBar";
+import Profile from "./components/profile";
 import '../public/css/cookie.scss';
 import '../public/css/app.scss';
 import '../public/css/score.scss';
+import '../public/css/navbar.scss';
+import '../public/css/profile.scss';
+import '../public/css/profielEditor.scss';
 
 class App extends Component {
 
     componentDidMount() {
         if (localStorage.getItem('AuthToken')) {
-            this.props.signIn();
+            this.props.getProfile();
         }
     }
 
     privateRoutes = [
-        '/game'
+        '/game',
+        '/myProfile',
+        '/editProfile'
     ]
 
     authRoutes = [
@@ -28,14 +35,19 @@ class App extends Component {
     ]
 
     routerGuard = () => {
-        let targetRoute = this.authRoutes;
-        if (this.props.isAuthorized) {
-            targetRoute = this.privateRoutes;
-        }
-        if (!targetRoute.includes(this.props.history.location.pathname)) {
-            return (
-                <Redirect to={targetRoute[0]}/>
-            )
+        //TODO enable guard only after getProfile or if AuthToken is not exists
+        if (!localStorage.getItem('AuthToken') || this.props.user) {
+
+            let targetRoute = this.authRoutes;
+            if (this.props.user) {
+                targetRoute = this.privateRoutes;
+            }
+            if (!targetRoute.includes(this.props.history.location.pathname)) {
+                return (
+                    <Redirect to={targetRoute[0]}/>
+                )
+            }
+
         }
     }
 
@@ -44,22 +56,24 @@ class App extends Component {
             <Switch>
                 {this.routerGuard()}
                 {
-                    this.props.isAuthorized ? (
+                    this.props.user ? (
                         <>
+                        <Navbar/>
+                        <div className="appBody">
                             <Route exact path="/game" render={()=>(
-                                <>
-                                    <Navbar/>
-                                    <div className="appBody">
+                                    <>
                                         <Cookie/>
                                         <Score/>
-                                    </div>
-                                </>
-                            )} />
+                                    </>
+                                )} />
+                            <Route path="/myProfile" component={Profile}/>
+                            <Route path="/editProfile" component={ProfileEditor}/>
+                        </div>
                         </>
                     ) : (
                         <>
-                            <Route path="/signUp" component={()=><Auth isSignUp={true}/>}/>
-                            <Route exact path="/" component={Auth}/>
+                            <Route path="/signUp" component={()=><ProfileEditor isSignUp={true}/>}/>
+                            <Route exact path="/" component={SignIn}/>
                         </>
                     )
                 }
@@ -69,12 +83,12 @@ class App extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    isAuthorized: state.authReducer.isAuthorized
+    user: state.authReducer.user
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    signIn: () => {
-        dispatch({type: 'signIn'})
+    getProfile: () => {
+        dispatch({type: 'getProfileRequest'})
     }
 });
 

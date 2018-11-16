@@ -12,8 +12,11 @@ const signIn = (user) => {
         secret,
         {expiresIn: 365 * 24 * 60 * 60}
     );
+    let resUser = user.toJSON();
+    delete resUser.password;
+    delete resUser.session_hash;
     return {
-        // user: user,
+        user: resUser,
         token: token
     };
 } ;
