@@ -18,8 +18,15 @@ const User = sequelize.define('user', {
         // validate: {
         //     len: {
         //         args: [8, 32]
-        //     },
+        //     }
         // }
+    },
+    username: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    bio: {
+        type: Sequelize.STRING
     },
     session_hash: {
         type: Sequelize.STRING,

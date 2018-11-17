@@ -5,7 +5,6 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const secret = require('../secret');
 const Score = require('../models/score');
-const spread = require('bluebird').spread;
 
 const signIn = (user) => {
     let token = jwt.sign(
@@ -13,9 +12,12 @@ const signIn = (user) => {
         secret,
         {expiresIn: 365 * 24 * 60 * 60}
     );
+    let resUser = user.toJSON();
+    delete resUser.password;
+    delete resUser.session_hash;
     return {
-        token: token,
-        user: user
+        user: resUser,
+        token: token
     };
 } ;
 
