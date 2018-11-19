@@ -15,12 +15,16 @@ const signIn = (user) => {
     );
     let resUser = user.toJSON();
     if (!resUser.avatars || resUser.avatars.length === 0) {
-        resUser.avatars = [{
+        resUser.currentAvatar = {
             id: 0,
             path: '/avatars/def.png',
             isCurrentAvatar: true
-        }];
+        };
+    } else {
+        [resUser.currentAvatar] = resUser.avatars;
     }
+    delete resUser.avatars;
+
     delete resUser.password;
     delete resUser.session_hash;
 

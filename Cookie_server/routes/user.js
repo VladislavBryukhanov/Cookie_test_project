@@ -35,13 +35,17 @@ const getProfile = async(id) => {
     });
     // console.log(user);
     let resUser = user.toJSON();
-    if (resUser.avatars.length === 0) {
-        resUser.avatars.push({
+    if (!resUser.avatars || resUser.avatars.length === 0) {
+        resUser.currentAvatar = {
             id: 0,
             path: '/avatars/def.png',
             isCurrentAvatar: true
-        });
+        };
+    } else {
+        [resUser.currentAvatar] = resUser.avatars;
     }
+    delete resUser.avatars;
+
     return resUser;
 };
 

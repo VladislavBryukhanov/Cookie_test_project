@@ -19,10 +19,15 @@ class Profile extends Component {
             <div className="profilePage">
                 <div className="profile">
                     <div className="leftBlock">
+                        <img className="avatar"
+                             src={this.props.user.currentAvatar.path}
+                             key={this.props.user.currentAvatar.id}/>
                         {
-                            this.props.user.avatars.map(avatar =>
-                                <img src={avatar.path} key={avatar.id} className="avatar"/>
-                            )
+                            this.props.user.avatars ?
+                                this.props.user.avatars.map(avatar =>
+                                    <img src={avatar.path} key={avatar.id} className="avatar"/>)
+                                :
+                                <div></div>
                         }
                     </div>
                     <div className="rightBlock">

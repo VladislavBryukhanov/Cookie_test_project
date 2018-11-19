@@ -37,11 +37,7 @@ const scoreReducer = (state = {scoreCounter: initData.scoreCounter}, action) => 
 const authReducer = (state = {user: initData.user}, action) => {
     switch (action.type) {
         case 'signIn': {
-            if (action.user.avatars) {
-                action.user.avatars.forEach(avatar => {
-                    avatar.path = `${baseUrl}/${avatar.path}`;
-                });
-            }
+            action.user.currentAvatar.path = `${baseUrl}/${action.user.currentAvatar.path }`;
             return {
                 ...state, user: action.user
             }
@@ -54,9 +50,7 @@ const authReducer = (state = {user: initData.user}, action) => {
             }
         }
         case 'editProfile': {
-            action.user.avatars.forEach(avatar => {
-                avatar.path = `${baseUrl}/${avatar.path}`;
-            });
+            action.user.currentAvatar.path = `${baseUrl}/${action.user.currentAvatar.path }`;
             return {
                 ...state, user: action.user
             }
@@ -65,6 +59,10 @@ const authReducer = (state = {user: initData.user}, action) => {
             action.avatars.forEach(avatar => {
                 avatar.path = `${baseUrl}/${avatar.path}`;
             });
+
+            if(!state.user.avatars) {
+                state.user.avatars = [];
+            }
 
             return {
                 ...state, user: {
