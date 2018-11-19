@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const secret = require('../secret');
 const Score = require('../models/score');
+const Avatar = require('../models/avatar');
 
 const signIn = (user) => {
     let token = jwt.sign(
@@ -13,13 +14,21 @@ const signIn = (user) => {
         {expiresIn: 365 * 24 * 60 * 60}
     );
     let resUser = user.toJSON();
+    if (!resUser.avatars || resUser.avatars.length === 0) {
+        resUser.avatars = [{
+            id: 0,
+            path: '/avatars/def.png',
+            isCurrentAvatar: true
+        }];
+    }
     delete resUser.password;
     delete resUser.session_hash;
+
     return {
         user: resUser,
         token: token
     };
-} ;
+};
 
 //TODO add private fields for db model, like password
 router.post('/signIn', async (request, response) => {
@@ -29,7 +38,16 @@ router.post('/signIn', async (request, response) => {
     };
 
     try {
-        let user = await User.findOne({where: query});
+        let user = await User.findOne({
+            where: query,
+            include: [{
+                model: Avatar,
+                where: {
+                    isCurrentAvatar: true
+                },
+                required: false
+            }]
+        });
         if (user) {
             let session_hash = crypto.randomBytes(20).toString('hex');
             //Session_hash will recreated after even signIn

@@ -94,6 +94,11 @@ function* editProfileRequest(action) {
     yield put({type: 'editProfile', user: req.data})
 }
 
+function* getAvatarsRequest(action) {
+    let req = yield requestWrapper(requestType.get,
+        `/avatar/getAvatars/${action.id}&${action.page}`, authHeader());
+    yield put({type: 'getAvatars', avatars: req.data});
+}
 
 export default function* sagas() {
     yield takeLatest('signUpRequest', signUpRequest);
@@ -103,4 +108,5 @@ export default function* sagas() {
     yield takeLatest('saveScoreRequest', saveScoreRequest);
     yield takeLatest('logOutRequest', logOutRequest);
     yield takeLatest('editProfileRequest', editProfileRequest);
+    yield takeLatest('getAvatarsRequest', getAvatarsRequest);
 }

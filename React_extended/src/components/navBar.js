@@ -12,11 +12,12 @@ class Navbar extends Component {
                     <Link to="/game">Game</Link>
                 </div>
                 <div className="profile">
-                    <img className="userAvatar"
-                         src="http://localhost:3000/images/def.png"
-                         onClick={() => this.props.history.push('/myProfile')}/>
                     <a className="username"
                        onClick={() => this.props.history.push('/editProfile')}>{this.props.user.username}</a>
+                    <img className="userAvatar"
+                         src = {this.props.user.avatars.find(
+                                 avatar => avatar['isCurrentAvatar']).path}
+                         onClick={() => this.props.history.push('/myProfile')}/>
                     <a className="logOutBtn"
                             onClick={() => this.props.logOut(this.props.scoreCounter)}>
                         Log out

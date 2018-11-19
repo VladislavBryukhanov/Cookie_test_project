@@ -1,36 +1,74 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/user')
+const User = require('../models/user');
+const Avatar = require('../models/avatar');
+
+const path = require('path');
+const multer = require('multer');
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, path.join(__dirname+ '/../', 'public/avatars'))
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`);
+    }
+});
+const upload = (multer({
+    storage: storage,
+    limits: {fileSize: 5* 1024 * 1024}
+}));
 
 const getProfile = async(id) => {
+    console.log(id);
     let user = await User.findOne({
         where: {id},
         attributes: {
             exclude: ["password", "session_hash"]
-        }
+        },
+        include: [{
+            model: Avatar,
+            required: false,
+            where: {
+                isCurrentAvatar: true
+            }
+        }]
     });
+    // console.log(user);
     let resUser = user.toJSON();
-    delete resUser.password;
-    delete resUser.session_hash;
+    if (resUser.avatars.length === 0) {
+        resUser.avatars.push({
+            id: 0,
+            path: '/avatars/def.png',
+            isCurrentAvatar: true
+        });
+    }
     return resUser;
 };
 
 router.get('/getProfileById/:id', async(request, response) => {
-    let user = await User.findOne({
-        where: {id: request.params['id']},
-        attributes: {
-            exclude: ["password", "session_hash"]
-        }
-    });
-    response.send(user);
+    response.send(await getProfile(request.params['id']));
 });
 
 router.get('/getProfile', async(request, response) => {
-    let user = await getProfile(request.user.id);
-    response.send(user);
+    response.send(await getProfile(request.user.id));
 });
 
-router.put('/editProfile', async(request, response) => {
+router.put('/editProfile', upload.array('avatars', 12), async(request, response) => {
+    let avatars = [];
+    request.files.forEach(avatar =>
+        avatars.push({
+            path: `avatars/${avatar.filename}`,
+            isCurrentAvatar: false
+        })
+    );
+    avatars[0].isCurrentAvatar = true;
+    avatars = await Avatar.bulkCreate(avatars);
+
+    let user = await User.findOne({
+        where: {id: request.user.id}
+    });
+    user.setAvatars(avatars);
+
     await User.update(request.body, {
         where: {id: request.user.id}
     });
@@ -38,3 +76,8 @@ router.put('/editProfile', async(request, response) => {
 });
 
 module.exports = router;
+
+// request.body.avatar = `avatars/${request.file.filename}`;
+// if(oldProfile.avatar !== 'avatars/default.jpg') {
+//     fs.unlink(`public/${oldProfile.avatar}`, err => console.log(err));
+// }

@@ -4,14 +4,26 @@ import { connect } from 'react-redux';
 class Profile extends Component {
     constructor(props) {
         super(props);
-        this.state = {}
+        this.state = {
+            page: 0
+        }
     }
+
+    componentDidMount() {
+        this.props.getAvatars(this.props.user.id, this.state.page)
+        // getGalleryRequest();
+    }
+
     render() {
         return (
             <div className="profilePage">
                 <div className="profile">
                     <div className="leftBlock">
-                        <img src="http://localhost:3000/images/def.png" className="avatar"/>
+                        {
+                            this.props.user.avatars.map(avatar =>
+                                <img src={avatar.path} key={avatar.id} className="avatar"/>
+                            )
+                        }
                     </div>
                     <div className="rightBlock">
                         <h1 className="username">{this.props.user.username}</h1>
@@ -27,6 +39,13 @@ const mapStateToProps = (state) => ({
     user: state.authReducer.user
 });
 
+const mapDispatchToProps = (dispatch) => ({
+    getAvatars: (id, page) => {
+        dispatch({type: 'getAvatarsRequest', id, page})
+    }
+});
+
 export default connect(
-    mapStateToProps
+    mapStateToProps,
+    mapDispatchToProps
 )(Profile);
