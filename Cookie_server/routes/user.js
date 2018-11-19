@@ -58,20 +58,22 @@ router.get('/getProfile', async(request, response) => {
 });
 
 router.put('/editProfile', upload.array('avatars', 12), async(request, response) => {
-    let avatars = [];
-    request.files.forEach(avatar =>
-        avatars.push({
-            path: `avatars/${avatar.filename}`,
-            isCurrentAvatar: false
-        })
-    );
-    avatars[0].isCurrentAvatar = true;
-    avatars = await Avatar.bulkCreate(avatars);
+    if (request.files.length > 0) {
+        let avatars = [];
+        request.files.forEach(avatar =>
+            avatars.push({
+                path: `avatars/${avatar.filename}`,
+                isCurrentAvatar: false
+            })
+        );
+        avatars[0].isCurrentAvatar = true;
+        avatars = await Avatar.bulkCreate(avatars);
 
-    let user = await User.findOne({
-        where: {id: request.user.id}
-    });
-    user.setAvatars(avatars);
+        let user = await User.findOne({
+            where: {id: request.user.id}
+        });
+        user.setAvatars(avatars);
+    }
 
     await User.update(request.body, {
         where: {id: request.user.id}
