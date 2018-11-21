@@ -96,7 +96,7 @@ function* editProfileRequest(action) {
 
 function* getAvatarsRequest(action) {
     let req = yield requestWrapper(requestType.get,
-        `/avatar/getAvatars/${action.id}&${action.page}`, authHeader());
+        `/avatar/getAvatars/${action.id}&${action.offset}&${action.limit}`, authHeader());
     yield put({
         type: 'getAvatars',
         avatars: req.data,
@@ -106,9 +106,19 @@ function* getAvatarsRequest(action) {
 function* deleteAvatarRequest(action) {
     let req = yield requestWrapper(requestType.delete,
         `/avatar/deleteAvatar/${action.id}`, authHeader());
-    yield put({type: 'deleteAvatar',
+    yield put({
+        type: 'deleteAvatar',
         deletedAvatar: req.data.deletedAvatar,
         newAvatar: req.data.newAvatar
+    })
+}
+
+function* setCurrentAvatarRequest(action) {
+    let req = yield requestWrapper(requestType.put,
+        '/avatar/setCurrentAvatar', {id: action.id}, authHeader());
+    yield put({
+        type: 'setCurrentAvatar',
+        newAvatar: req.data
     })
 }
 
@@ -122,4 +132,5 @@ export default function* sagas() {
     yield takeLatest('editProfileRequest', editProfileRequest);
     yield takeLatest('getAvatarsRequest', getAvatarsRequest);
     yield takeLatest('deleteAvatarRequest', deleteAvatarRequest);
+    yield takeLatest('setCurrentAvatarRequest', setCurrentAvatarRequest);
 }

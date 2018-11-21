@@ -82,6 +82,7 @@ const authReducer = (state = {user: initData.user}, action) => {
         case 'deleteAvatar': {
             let avatars = {
                 ...state.user.avatars,
+                count: action.count,
                 data: [
                     ...state.user.avatars.data
                         .filter(avatar => avatar.id !== action.deletedAvatar.id)
@@ -97,6 +98,31 @@ const authReducer = (state = {user: initData.user}, action) => {
                     avatars.data.push(action.newAvatar);
                 }
             }
+            return {
+                ...state, user: {
+                    ...state.user,
+                    avatars: avatars
+                }
+            }
+        }
+        case 'setCurrentAvatar': {
+            let avatars = state.user.avatars;
+
+            avatars.data.forEach(avatar => {
+                if (avatar.isCurrentAvatar) {
+                    avatar.isCurrentAvatar = false;
+                }
+            });
+
+            action.newAvatar.path = `${baseUrl}/${action.newAvatar.path}`;
+            let currentAvatarIndex = avatars.data
+                .find(avatar => avatar.id === action.newAvatar.id);
+            if (currentAvatarIndex > -1) {
+                avatars.data[currentAvatarIndex] = action.newAvatar;
+            } else {
+                avatars.data.push(action.newAvatar);
+            }
+
             return {
                 ...state, user: {
                     ...state.user,

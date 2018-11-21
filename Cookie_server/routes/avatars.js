@@ -3,25 +3,24 @@ const router = express.Router();
 const Avatar = require('../models/avatar');
 const fs = require('fs');
 
-const OnePageStep = 8;
-
-router.get('/getAvatars/:id&:page', async(request, response) => {
-    let offset =  OnePageStep * request.params.page;
+router.get('/getAvatars/:id&:offset&:limit', async(request, response) => {
+    // let offset =  OnePageStep * request.params.page;
+    let offset = parseInt(request.params.offset);
+    let limit = parseInt(request.params.limit);
     let avatars = await Avatar.findAndCountAll({
         where: {
             userId: request.params.id,
             isCurrentAvatar: false
         },
         offset: offset,
-        limit: OnePageStep,
+        limit: limit,
     });
     response.send({
         data: avatars.rows,
         count: avatars.count,
         offset: offset,
-        limit: OnePageStep
+        limit: limit
     });
-
 });
 
 router.delete('/deleteAvatar/:id', async(request, response) => {
@@ -29,6 +28,13 @@ router.delete('/deleteAvatar/:id', async(request, response) => {
         {userId: request.user.id, id: request.params.id}});
     fs.unlink(`public/${deletedAvatar.path}`, async () => {
         await deletedAvatar.destroy();
+        let count = await Avatar.count({
+            where: {
+                userId: request.user.id,
+                isCurrentAvatar: false
+            }
+        });
+
         let newAvatar;
         if (deletedAvatar.isCurrentAvatar) {
             newAvatar = await Avatar.findOne({
@@ -45,20 +51,27 @@ router.delete('/deleteAvatar/:id', async(request, response) => {
                     path: '/avatars/def.png',
                     isCurrentAvatar: true
                 };
+                count = -1;
             }
         }
-        response.send({deletedAvatar, newAvatar});
+        response.send({deletedAvatar, newAvatar, count});
     });
 });
 
-router.post('/setCurrentAvatar', async(request, response) => {
-    let avatar = await Avatar.update({isCurrentAvatar: true}, {
-        where: {
-            id: request.body.id,
-            userId: request.user.id
-        }
-    });
-    response.send(avatar);
+router.put('/setCurrentAvatar', async(request, response) => {
+    let oldAvatar = await Avatar.findOne({where: {
+        userId: request.user.id,
+        isCurrentAvatar: true
+    }});
+    await oldAvatar.update({isCurrentAvatar: false});
+
+    let newAvatar = await Avatar.findOne({where: {
+        id: request.body.id,
+        userId: request.user.id
+    }});
+    await newAvatar.update({isCurrentAvatar: true});
+
+    response.send(newAvatar);
 });
 
 module.exports = router;

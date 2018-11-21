@@ -13,6 +13,12 @@ class ProfileEditor extends Component {
         }
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.user !== this.props.user) {
+            this.props.history.push('/myProfile')
+        }
+    }
+
     componentDidMount() {
         if (!this.props.isSignIn) {
             this.setState(this.props.user);
