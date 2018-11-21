@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 import Cookie from './components/cookie';
 import Score from './components/score';
-import SignIn from "./components/signIn";
+import SignIn from "./components/auth";
 import ProfileEditor from "./components/profileEditor";
 import Navbar from "./components/navBar";
 import Profile from "./components/profile";
@@ -14,6 +14,7 @@ import '../public/css/score.scss';
 import '../public/css/navbar.scss';
 import '../public/css/profile.scss';
 import '../public/css/profielEditor.scss';
+import '../public/css/slider.scss';
 
 class App extends Component {
 

@@ -110,7 +110,6 @@ const mapDispatchToProps = (dispatch) => ({
                 delete data[fieldName];
             } else {
                 if (fieldName === 'avatars') {
-                    console.log(data['avatars']);
                     data['avatars'].forEach(avatar => {
                         editedUser.append('avatars', avatar);
                     })

@@ -33,19 +33,24 @@ const getProfile = async(id) => {
             }
         }]
     });
-    // console.log(user);
     let resUser = user.toJSON();
-    if (!resUser.avatars || resUser.avatars.length === 0) {
-        resUser.currentAvatar = {
+    if (resUser.avatars.length === 0) {
+        resUser.avatars = [{
             id: 0,
             path: '/avatars/def.png',
             isCurrentAvatar: true
-        };
-    } else {
-        [resUser.currentAvatar] = resUser.avatars;
+        }];
     }
-    delete resUser.avatars;
-
+    resUser.avatars = {
+        data: resUser.avatars,
+        count: await Avatar.count({
+            where: {
+                userId: user.id,
+                isCurrentAvatar: false
+            }}),
+        offset: 0,
+        limit: 1
+    };
     return resUser;
 };
 
@@ -66,13 +71,17 @@ router.put('/editProfile', upload.array('avatars', 12), async(request, response)
                 isCurrentAvatar: false
             })
         );
-        avatars[0].isCurrentAvatar = true;
-        avatars = await Avatar.bulkCreate(avatars);
 
         let user = await User.findOne({
             where: {id: request.user.id}
         });
-        user.setAvatars(avatars);
+        let oldAvatars = await user.getAvatars();
+        if (oldAvatars.length === 0) {
+            avatars[0].isCurrentAvatar = true;
+        }
+
+        avatars = await Avatar.bulkCreate(avatars);
+        user.addAvatars(avatars);
     }
 
     await User.update(request.body, {

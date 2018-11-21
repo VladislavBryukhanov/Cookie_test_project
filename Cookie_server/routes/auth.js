@@ -7,24 +7,31 @@ const secret = require('../secret');
 const Score = require('../models/score');
 const Avatar = require('../models/avatar');
 
-const signIn = (user) => {
+const signIn = async (user) => {
     let token = jwt.sign(
         {id: user.id, session_hash: user.session_hash},
         secret,
         {expiresIn: 365 * 24 * 60 * 60}
     );
+    //TODO avatar count
     let resUser = user.toJSON();
     if (!resUser.avatars || resUser.avatars.length === 0) {
-        resUser.currentAvatar = {
+        resUser.avatars = [{
             id: 0,
             path: '/avatars/def.png',
             isCurrentAvatar: true
-        };
-    } else {
-        [resUser.currentAvatar] = resUser.avatars;
+        }];
     }
-    delete resUser.avatars;
-
+    resUser.avatars = {
+        data: resUser.avatars,
+        count: await Avatar.count({
+            where: {
+                userId: user.id,
+                isCurrentAvatar: false
+            }}),
+        offset: 0,
+        limit: 1
+    };
     delete resUser.password;
     delete resUser.session_hash;
 
@@ -58,7 +65,7 @@ router.post('/signIn', async (request, response) => {
             await User.update(
                 {session_hash: session_hash},
                 {where: query});
-            response.send(signIn(user));
+            response.send(await signIn(user));
         } else {
             response.status(401);
         }
@@ -74,7 +81,7 @@ router.post('/signUp', async (request, response) => {
         let user = await User.create(request.body);
         let score = await Score.create();
         score.setUser(user);
-        response.send(signIn(user));
+        response.send(await signIn(user));
     } catch(err) {
         console.log(err);
         response.status(500).send({error: err.data});

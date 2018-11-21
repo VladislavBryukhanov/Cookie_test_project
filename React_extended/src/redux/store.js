@@ -37,7 +37,11 @@ const scoreReducer = (state = {scoreCounter: initData.scoreCounter}, action) => 
 const authReducer = (state = {user: initData.user}, action) => {
     switch (action.type) {
         case 'signIn': {
-            action.user.currentAvatar.path = `${baseUrl}/${action.user.currentAvatar.path }`;
+            if (action.user.avatars) {
+                action.user.avatars.data.forEach(avatar => {
+                    avatar.path = `${baseUrl}/${avatar.path}`;
+                });
+            }
             return {
                 ...state, user: action.user
             }
@@ -50,26 +54,53 @@ const authReducer = (state = {user: initData.user}, action) => {
             }
         }
         case 'editProfile': {
-            action.user.currentAvatar.path = `${baseUrl}/${action.user.currentAvatar.path }`;
+            action.user.avatars.data.forEach(avatar => {
+                avatar.path = `${baseUrl}/${avatar.path}`;
+            });
             return {
                 ...state, user: action.user
             }
         }
         case 'getAvatars': {
-            action.avatars.forEach(avatar => {
+            action.avatars.data.forEach(avatar => {
                 avatar.path = `${baseUrl}/${avatar.path}`;
             });
-
-            if(!state.user.avatars) {
-                state.user.avatars = [];
-            }
 
             return {
                 ...state, user: {
                     ...state.user,
-                    avatars: [
-                        ...state.user.avatars, ...action.avatars
-                    ]
+                    avatars: {
+                        ...action.avatars,
+                        data: [
+                            ...state.user.avatars.data,
+                            ...action.avatars.data
+                        ]
+                    }
+                }
+            }
+        }
+        case 'deleteAvatar': {
+            let avatars = {
+                ...state.user.avatars,
+                data: [
+                    ...state.user.avatars.data
+                        .filter(avatar => avatar.id !== action.deletedAvatar.id)
+                ]
+            };
+            if (action.newAvatar) {
+                action.newAvatar.path = `${baseUrl}/${action.newAvatar.path}`;
+                let currentAvatarIndex = avatars.data
+                    .findIndex(avatar => avatar.id === action.newAvatar.id);
+                if (currentAvatarIndex > -1) {
+                    avatars.data[currentAvatarIndex] = action.newAvatar;
+                } else {
+                    avatars.data.push(action.newAvatar);
+                }
+            }
+            return {
+                ...state, user: {
+                    ...state.user,
+                    avatars: avatars
                 }
             }
         }
