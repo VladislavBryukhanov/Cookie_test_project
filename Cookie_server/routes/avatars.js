@@ -51,7 +51,6 @@ router.delete('/deleteAvatar/:id', async(request, response) => {
                     path: '/avatars/def.png',
                     isCurrentAvatar: true
                 };
-                count = -1;
             }
         }
         response.send({deletedAvatar, newAvatar, count});

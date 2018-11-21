@@ -108,6 +108,7 @@ function* deleteAvatarRequest(action) {
         `/avatar/deleteAvatar/${action.id}`, authHeader());
     yield put({
         type: 'deleteAvatar',
+        count: req.data.count,
         deletedAvatar: req.data.deletedAvatar,
         newAvatar: req.data.newAvatar
     })

@@ -11,19 +11,22 @@ class Slider extends Component {
         this.limit = 8;
     }
 
+    //TODO bug when remount page avatars get duplicate
     componentDidMount() {
         this.props.getAvatars(this.props.user.id, this.page * this.limit, this.limit);
         // getGalleryRequest();
     }
 
-    componentDidUpdate(prevProps) {
-        if (prevProps.user.avatars.data.length > 1
-            && prevProps.user.avatars.data.length < this.props.user.avatars.data.length) {
+    componentWillReceiveProps(nextProps) {
+        if (this.props.user.avatars.data.length > 1
+            && this.props.user.avatars.data.length < nextProps.user.avatars.data.length) {
             this.nextImage();
+        } else if (this.props.user.avatars.data.length > nextProps.user.avatars.data.length) {
+            if (nextProps.user.avatars.data.length <= this.state.index) {
+                this.index = nextProps.user.avatars.data.length - 1;
+                this.setState({index: nextProps.user.avatars.data.length - 1});
+            }
         }
-        // else if (nextProps.user.avatars.data.length < this.props.user.avatars.data.length) {
-            // this.prevImage();
-        // }
     }
 
     nextImage = () => {
@@ -69,7 +72,7 @@ class Slider extends Component {
                 <div className="slider">
                     <div className="viewer">
 
-                        {this.props.user.avatars.count > -1 &&
+                        {this.props.user.avatars.data.length > 1 &&
                             <>
                                 <div className="controllers">
                                     <button className="prevBtn" onClick={this.prevImage}>
@@ -80,7 +83,11 @@ class Slider extends Component {
                                         <img src="../../public/images/next-arrow4.png"/>
                                     </button>
                                 </div>
+                            </>
+                        }
 
+                        {this.props.user.avatars.data.find(ava => ava.isCurrentAvatar).id > 0 &&
+                            <>
                                 <button onClick={this.deleteAvatar}
                                         className="deleteAvatar">
                                     <img src="../../public/images/recycle.png"/>
