@@ -8,7 +8,14 @@ class ProfileEditor extends Component {
             username: '',
             login: '',
             password: '',
-            bio: ''
+            bio: '',
+            avatars: []
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.user !== this.props.user) {
+            this.props.history.push('/myProfile')
         }
     }
 
@@ -34,6 +41,10 @@ class ProfileEditor extends Component {
         this.setState({bio: e.target.value});
     }
 
+    onAvatarChanged = (e) => {
+        this.setState({avatars: [...e.target.files]});
+    }
+
     render() {
         return (
             this.props.isSignUp ?
@@ -49,8 +60,8 @@ class ProfileEditor extends Component {
                 :
             <form onSubmit={(e) => this.props.editProfile(e, this.state)} className="editProfileForm">
                 <div className="field">
-                    <label>Avatar*</label>
-                    <input type="file"/>
+                    <label>Avatar</label>
+                    <input type="file" multiple onChange={this.onAvatarChanged}/>
                 </div>
                 <div className="field">
                     <label>Username</label>
@@ -98,12 +109,22 @@ const mapDispatchToProps = (dispatch) => ({
     },
     editProfile: (e, data) => {
         e.preventDefault();
+
+        let editedUser = new FormData();
         for (let fieldName in data) {
             if (!data[fieldName]) {
                 delete data[fieldName];
+            } else {
+                if (fieldName === 'avatars') {
+                    data['avatars'].forEach(avatar => {
+                        editedUser.append('avatars', avatar);
+                    })
+                } else {
+                    editedUser.append(fieldName, data[fieldName]);
+                }
             }
         }
-        dispatch({type: 'editProfileRequest', data: data});
+        dispatch({type: 'editProfileRequest', data: editedUser});
     }
 });
 

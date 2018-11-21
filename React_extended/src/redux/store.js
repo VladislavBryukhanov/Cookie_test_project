@@ -2,6 +2,11 @@ import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import createSagaMiddleware from 'redux-saga';
 import sagas from './sagas';
+import axios from 'axios';
+
+const baseUrl = 'http://localhost:3000';
+
+axios.defaults.baseURL = baseUrl;
 
 const initData = {
     scoreCounter: 0,
@@ -32,6 +37,11 @@ const scoreReducer = (state = {scoreCounter: initData.scoreCounter}, action) => 
 const authReducer = (state = {user: initData.user}, action) => {
     switch (action.type) {
         case 'signIn': {
+            if (action.user.avatars) {
+                action.user.avatars.data.forEach(avatar => {
+                    avatar.path = `${baseUrl}/${avatar.path}`;
+                });
+            }
             return {
                 ...state, user: action.user
             }
@@ -44,8 +54,80 @@ const authReducer = (state = {user: initData.user}, action) => {
             }
         }
         case 'editProfile': {
+            action.user.avatars.data.forEach(avatar => {
+                avatar.path = `${baseUrl}/${avatar.path}`;
+            });
             return {
                 ...state, user: action.user
+            }
+        }
+        case 'getAvatars': {
+            action.avatars.data.forEach(avatar => {
+                avatar.path = `${baseUrl}/${avatar.path}`;
+            });
+
+            return {
+                ...state, user: {
+                    ...state.user,
+                    avatars: {
+                        ...action.avatars,
+                        data: [
+                            ...state.user.avatars.data,
+                            ...action.avatars.data
+                        ]
+                    }
+                }
+            }
+        }
+        case 'deleteAvatar': {
+            let avatars = {
+                ...state.user.avatars,
+                count: action.count,
+                data: [
+                    ...state.user.avatars.data
+                        .filter(avatar => avatar.id !== action.deletedAvatar.id)
+                ]
+            };
+            if (action.newAvatar) {
+                action.newAvatar.path = `${baseUrl}/${action.newAvatar.path}`;
+                let currentAvatarIndex = avatars.data
+                    .findIndex(avatar => avatar.id === action.newAvatar.id);
+                if (currentAvatarIndex > -1) {
+                    avatars.data[currentAvatarIndex] = action.newAvatar;
+                } else {
+                    avatars.data.push(action.newAvatar);
+                }
+            }
+            return {
+                ...state, user: {
+                    ...state.user,
+                    avatars: avatars
+                }
+            }
+        }
+        case 'setCurrentAvatar': {
+            let avatars = state.user.avatars;
+
+            avatars.data.forEach(avatar => {
+                if (avatar.isCurrentAvatar) {
+                    avatar.isCurrentAvatar = false;
+                }
+            });
+
+            action.newAvatar.path = `${baseUrl}/${action.newAvatar.path}`;
+            let currentAvatarIndex = avatars.data
+                .find(avatar => avatar.id === action.newAvatar.id);
+            if (currentAvatarIndex > -1) {
+                avatars.data[currentAvatarIndex] = action.newAvatar;
+            } else {
+                avatars.data.push(action.newAvatar);
+            }
+
+            return {
+                ...state, user: {
+                    ...state.user,
+                    avatars: avatars
+                }
             }
         }
         default: {

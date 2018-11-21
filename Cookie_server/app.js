@@ -4,6 +4,7 @@ const cors = require('cors');
 const authRouter = require('./routes/auth');
 const userRouter = require('./routes/user');
 const scoreRouter = require('./routes/score');
+const avatarRouter = require('./routes/avatars');
 const initRelations = require('./models/relations');
 // initRelations({force: true});
 initRelations({force: false});
@@ -26,5 +27,6 @@ app.use(jwtMW);
 app.use('/', authRouter);
 app.use('/user', userRouter);
 app.use('/score', scoreRouter);
+app.use('/avatar', avatarRouter);
 
 module.exports = app;
