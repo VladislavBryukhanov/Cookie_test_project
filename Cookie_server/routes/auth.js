@@ -6,6 +6,7 @@ const crypto = require('crypto');
 const secret = require('../secret');
 const Score = require('../models/score');
 const Avatar = require('../models/avatar');
+const getProfile = require('./user').getProfile;
 
 const signIn = async (user) => {
     let token = jwt.sign(
@@ -13,30 +14,8 @@ const signIn = async (user) => {
         secret,
         {expiresIn: 365 * 24 * 60 * 60}
     );
-    //TODO avatar count
-    let resUser = user.toJSON();
-    if (!resUser.avatars || resUser.avatars.length === 0) {
-        resUser.avatars = [{
-            id: 0,
-            path: '/avatars/def.png',
-            isCurrentAvatar: true
-        }];
-    }
-    resUser.avatars = {
-        data: resUser.avatars,
-        count: await Avatar.count({
-            where: {
-                userId: user.id,
-                isCurrentAvatar: false
-            }}),
-        offset: 0,
-        limit: 1
-    };
-    delete resUser.password;
-    delete resUser.session_hash;
-
     return {
-        user: resUser,
+        user: await getProfile(user.id),
         token: token
     };
 };
