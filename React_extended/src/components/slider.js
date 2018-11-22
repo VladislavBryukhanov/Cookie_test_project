@@ -13,19 +13,25 @@ class Slider extends Component {
 
     //TODO bug when remount page avatars get duplicate
     componentDidMount() {
-        this.props.getAvatars(this.props.user.id, this.page * this.limit, this.limit);
+        if (this.props.user.avatars.data.length <= 1) {
+            this.props.getAvatars(this.props.user.id, this.page * this.limit, this.limit);
+        }
         // getGalleryRequest();
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.props.user.avatars.data.length > 1
-            && this.props.user.avatars.data.length < nextProps.user.avatars.data.length) {
-            this.nextImage();
-        } else if (this.props.user.avatars.data.length > nextProps.user.avatars.data.length) {
+        if (this.props.user.avatars.data.length > nextProps.user.avatars.data.length) {
             if (nextProps.user.avatars.data.length <= this.state.index) {
                 this.index = nextProps.user.avatars.data.length - 1;
                 this.setState({index: nextProps.user.avatars.data.length - 1});
             }
+        }
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.user.avatars.data.length > 1
+            && prevProps.user.avatars.data.length < this.props.user.avatars.data.length) {
+            this.nextImage();
         }
     }
 
