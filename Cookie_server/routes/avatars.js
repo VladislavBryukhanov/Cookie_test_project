@@ -3,6 +3,12 @@ const router = express.Router();
 const Avatar = require('../models/avatar');
 const fs = require('fs');
 
+const defaultAvatar = {
+    id: 0,
+    path: '/avatars/def.png',
+    isCurrentAvatar: true
+};
+
 router.get('/getAvatars/:id&:offset&:limit', async(request, response) => {
     // let offset =  OnePageStep * request.params.page;
     let offset = parseInt(request.params.offset);
@@ -46,11 +52,7 @@ router.delete('/deleteAvatar/:id', async(request, response) => {
             if (newAvatar) {
                 await newAvatar.update({isCurrentAvatar: true});
             } else {
-                newAvatar = {
-                    id: 0,
-                    path: '/avatars/def.png',
-                    isCurrentAvatar: true
-                };
+                newAvatar = defaultAvatar;
             }
         }
         response.send({deletedAvatar, newAvatar, count});
@@ -73,4 +75,7 @@ router.put('/setCurrentAvatar', async(request, response) => {
     response.send(newAvatar);
 });
 
-module.exports = router;
+module.exports = {
+    router,
+    defaultAvatar
+};

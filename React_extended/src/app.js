@@ -36,7 +36,6 @@ class App extends Component {
     ]
 
     routerGuard = () => {
-        //TODO enable guard only after getProfile or if AuthToken is not exists
         if (!localStorage.getItem('AuthToken') || this.props.user) {
 
             let targetRoute = this.authRoutes;

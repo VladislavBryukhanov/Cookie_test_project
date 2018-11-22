@@ -11,21 +11,25 @@ class Slider extends Component {
         this.limit = 8;
     }
 
-    //TODO bug when remount page avatars get duplicate
     componentDidMount() {
-        this.props.getAvatars(this.props.user.id, this.page * this.limit, this.limit);
-        // getGalleryRequest();
+        if (this.props.user.avatars.data.length <= 1) {
+            this.props.getAvatars(this.props.user.id, this.page * this.limit, this.limit);
+        }
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.props.user.avatars.data.length > 1
-            && this.props.user.avatars.data.length < nextProps.user.avatars.data.length) {
-            this.nextImage();
-        } else if (this.props.user.avatars.data.length > nextProps.user.avatars.data.length) {
+        if (this.props.user.avatars.data.length > nextProps.user.avatars.data.length) {
             if (nextProps.user.avatars.data.length <= this.state.index) {
                 this.index = nextProps.user.avatars.data.length - 1;
                 this.setState({index: nextProps.user.avatars.data.length - 1});
             }
+        }
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.user.avatars.data.length > 1
+            && prevProps.user.avatars.data.length < this.props.user.avatars.data.length) {
+            this.nextImage();
         }
     }
 
@@ -58,51 +62,38 @@ class Slider extends Component {
             this.props.user.avatars.data[this.state.index].id);
     };
 
-    dialogClosing = (e) => {
-        if (e.target.className !== 'slider') {
-            // TODO is it crutch?
-            e.stopPropagation();
-        }
-    };
-
-
     render() {
         return (
-            <div className="modalBackground" onClick={this.dialogClosing}>
-                <div className="slider">
-                    <div className="viewer">
-
-                        {this.props.user.avatars.data.length > 1 &&
-                            <>
-                                <div className="controllers">
-                                    <button className="prevBtn" onClick={this.prevImage}>
-                                        <img src="../../public/images/prev-arrow4.png"/>
-                                    </button>
-
-                                    <button className="nextBtn" onClick={this.nextImage}>
-                                        <img src="../../public/images/next-arrow4.png"/>
-                                    </button>
-                                </div>
-                            </>
-                        }
-
-                        {this.props.user.avatars.data.find(ava => ava.isCurrentAvatar).id > 0 &&
-                            <>
-                                <button onClick={this.deleteAvatar}
-                                        className="deleteAvatar">
-                                    <img src="../../public/images/recycle.png"/>
+                <div className="viewer">
+                    {this.props.user.avatars.data.length > 1 &&
+                        <>
+                            <div className="controllers">
+                                <button className="prevBtn" onClick={this.prevImage}>
+                                    <img src="../../public/images/prev-arrow4.png"/>
                                 </button>
-                                <button onClick={this.setCurrentAvatar}
-                                        className="favoriteAvatar">
-                                    <img src="../../public/images/favorite.png"/>
-                                </button>
-                            </>
-                        }
 
-                        <img src={this.props.user.avatars.data[this.state.index].path}/>
-                    </div>
+                                <button className="nextBtn" onClick={this.nextImage}>
+                                    <img src="../../public/images/next-arrow4.png"/>
+                                </button>
+                            </div>
+                        </>
+                    }
+
+                    {this.props.user.avatars.data.find(ava => ava.isCurrentAvatar).id > 0 &&
+                        <>
+                            <button onClick={this.deleteAvatar}
+                                    className="deleteAvatar">
+                                <img src="../../public/images/recycle.png"/>
+                            </button>
+                            <button onClick={this.setCurrentAvatar}
+                                    className="favoriteAvatar">
+                                <img src="../../public/images/favorite.png"/>
+                            </button>
+                        </>
+                    }
+
+                    <img src={this.props.user.avatars.data[this.state.index].path}/>
                 </div>
-            </div>
         )
     }
 }

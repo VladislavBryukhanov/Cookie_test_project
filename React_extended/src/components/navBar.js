@@ -13,7 +13,9 @@ class Navbar extends Component {
                 </div>
                 <div className="profile">
                     <a className="username"
-                       onClick={() => this.props.history.push('/editProfile')}>{this.props.user.username}</a>
+                       onClick={() => this.props.history.push('/editProfile')}>
+                        {this.props.user.username}
+                    </a>
                     <img className="userAvatar"
                          src = {this.props.user.avatars.data.find(
                                  avatar => avatar['isCurrentAvatar']).path}

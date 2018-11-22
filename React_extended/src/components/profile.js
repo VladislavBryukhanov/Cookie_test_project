@@ -1,21 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import ModalSlider from './slider';
-import ReactDom from 'react-dom';
+import Modal from './modal';
 
 class Profile extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            // page: 0,
             isDialogOpened: false
         }
     }
-    //
-    // componentDidMount() {
-    //     this.props.getAvatars(this.props.user.id, this.state.page)
-    //     // getGalleryRequest();
-    // }
 
     showSlider = () => {
         this.setState({isDialogOpened: !this.state.isDialogOpened});
@@ -26,12 +20,9 @@ class Profile extends Component {
             <>
                 {
                     this.state.isDialogOpened &&
-                        ReactDom.createPortal(
-                            <div onClick={this.showSlider}>
-                                <ModalSlider />
-                            </div>,
-                            document.getElementById('modalRoot')
-                        )
+                        <Modal hideSlider={this.showSlider}>
+                            <ModalSlider />
+                        </Modal>
                 }
                 <div className="profilePage">
                     <div className="profile">
@@ -40,14 +31,6 @@ class Profile extends Component {
                                  src = {this.props.user.avatars.data.find(
                                      avatar => avatar['isCurrentAvatar']).path}
                                  onClick={this.showSlider}/>
-                            {/*{
-                                this.props.user.avatars.map(avatar =>
-                                    <img src={avatar.path}
-                                         key={avatar.id}
-                                         onClick={() => this.props.deleteAvatar(avatar.id)}
-                                         className="avatar"/>
-                                )
-                            }*/}
                         </div>
                         <div className="rightBlock">
                             <h1 className="username">{this.props.user.username}</h1>
@@ -64,18 +47,6 @@ const mapStateToProps = (state) => ({
     user: state.authReducer.user
 });
 
-/*
-const mapDispatchToProps = (dispatch) => ({
-    getAvatars: (id, page) => {
-        dispatch({type: 'getAvatarsRequest', id, page})
-    },
-    deleteAvatar: (id) => {
-        dispatch({type: 'deleteAvatarRequest', id: id})
-    }
-});
-*/
-
 export default connect(
     mapStateToProps
-    // mapDispatchToProps
 )(Profile);

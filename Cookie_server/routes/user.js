@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
 const Avatar = require('../models/avatar');
+const defaultAvatar = require('./avatars');
 
 const path = require('path');
 const multer = require('multer');
@@ -35,11 +36,7 @@ const getProfile = async(id) => {
     });
     let resUser = user.toJSON();
     if (resUser.avatars.length === 0) {
-        resUser.avatars = [{
-            id: 0,
-            path: '/avatars/def.png',
-            isCurrentAvatar: true
-        }];
+        resUser.avatars = [defaultAvatar];
     }
     resUser.avatars = {
         data: resUser.avatars,
@@ -90,9 +87,7 @@ router.put('/editProfile', upload.array('avatars', 12), async(request, response)
     response.send(await getProfile(request.user.id));
 });
 
-module.exports = router;
-
-// request.body.avatar = `avatars/${request.file.filename}`;
-// if(oldProfile.avatar !== 'avatars/default.jpg') {
-//     fs.unlink(`public/${oldProfile.avatar}`, err => console.log(err));
-// }
+module.exports = {
+    router,
+    getProfile
+};

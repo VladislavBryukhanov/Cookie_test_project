@@ -19,9 +19,12 @@ class ProfileEditor extends Component {
         }
     }
 
-    componentDidMount() {
+    componentWillMount() {
         if (!this.props.isSignIn) {
-            this.setState(this.props.user);
+            this.setState({
+                ...this.props.user,
+                avatars: this.state.avatars
+            });
         }
     }
 
@@ -115,7 +118,7 @@ const mapDispatchToProps = (dispatch) => ({
             if (!data[fieldName]) {
                 delete data[fieldName];
             } else {
-                if (fieldName === 'avatars') {
+                if (fieldName === 'avatars' && data[fieldName].length !== 0) {
                     data['avatars'].forEach(avatar => {
                         editedUser.append('avatars', avatar);
                     })
