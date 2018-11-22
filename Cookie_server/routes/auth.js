@@ -6,7 +6,7 @@ const crypto = require('crypto');
 const secret = require('../secret');
 const Score = require('../models/score');
 const Avatar = require('../models/avatar');
-const getProfile = require('./user').getProfile;
+const getProfile = require('./user_s3').getProfile;
 
 const signIn = async (user) => {
     let token = jwt.sign(

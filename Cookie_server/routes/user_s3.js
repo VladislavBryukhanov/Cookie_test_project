@@ -2,25 +2,23 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
 const Avatar = require('../models/avatar');
-const defaultAvatar = require('./avatars').defaultAvatar;
-
+const defaultAvatar = require('./avatars_s3').defaultAvatar;
 const path = require('path');
+const uuid = require('uuid');
+
 const multer = require('multer');
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, path.join(__dirname+ '/../', 'public/avatars'))
-    },
-    filename: (req, file, cb) => {
-        cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`);
-    }
-});
-const upload = (multer({
-    storage: storage,
-    limits: {fileSize: 5* 1024 * 1024}
-}));
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+const s3 = require('../awsS3');
+const myBucket = 'vbriuhanov-test';
+
+const options = {
+    partSize: 5 * 1024 * 1024,
+    queueSize: 12
+};
 
 const getProfile = async(id) => {
-    console.log(id);
     let user = await User.findOne({
         where: {id},
         attributes: {
@@ -62,12 +60,25 @@ router.get('/getProfile', async(request, response) => {
 router.put('/editProfile', upload.array('avatars', 12), async(request, response) => {
     if (request.files.length > 0) {
         let avatars = [];
-        request.files.forEach(avatar =>
+
+        for (let avatar of request.files) {
+            let params = {
+                Body: avatar.buffer,
+                Bucket: myBucket,
+                Key: uuid.v1() + path.extname(avatar.originalname),
+            };
+            await s3.upload(params, options).promise();
+
+            delete params.Body;
+            let url = await s3.getSignedUrl('getObject', params);
+            console.log(url);
             avatars.push({
-                path: `avatars/${avatar.filename}`,
-                isCurrentAvatar: false
-            })
-        );
+                path: url,
+                isCurrentAvatar: false,
+                key: params.Key
+            });
+        }
+        console.log(avatars);
 
         let user = await User.findOne({
             where: {id: request.user.id}

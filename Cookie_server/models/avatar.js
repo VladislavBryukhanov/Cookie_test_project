@@ -3,10 +3,13 @@ const sequelize = require('../dbConnection');
 
 const Avatar = sequelize.define('avatar', {
     path: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
     },
     isCurrentAvatar: {
         type: Sequelize.BOOLEAN
+    },
+    key: {
+        type: Sequelize.STRING
     }
 });
 

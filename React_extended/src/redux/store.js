@@ -37,11 +37,11 @@ const scoreReducer = (state = {scoreCounter: initData.scoreCounter}, action) => 
 const authReducer = (state = {user: initData.user}, action) => {
     switch (action.type) {
         case 'signIn': {
-            if (action.user.avatars) {
-                action.user.avatars.data.forEach(avatar => {
-                    avatar.path = `${baseUrl}/${avatar.path}`;
-                });
-            }
+            // if (action.user.avatars) {
+            //     action.user.avatars.data.forEach(avatar => {
+            //         avatar.path = `${baseUrl}/${avatar.path}`;
+            //     });
+            // }
             return {
                 ...state, user: action.user
             }
@@ -54,17 +54,17 @@ const authReducer = (state = {user: initData.user}, action) => {
             }
         }
         case 'editProfile': {
-            action.user.avatars.data.forEach(avatar => {
-                avatar.path = `${baseUrl}/${avatar.path}`;
-            });
+            // action.user.avatars.data.forEach(avatar => {
+            //     avatar.path = `${baseUrl}/${avatar.path}`;
+            // });
             return {
                 ...state, user: action.user
             }
         }
         case 'getAvatars': {
-            action.avatars.data.forEach(avatar => {
-                avatar.path = `${baseUrl}/${avatar.path}`;
-            });
+            // action.avatars.data.forEach(avatar => {
+            //     avatar.path = `${baseUrl}/${avatar.path}`;
+            // });
 
             return {
                 ...state, user: {
@@ -89,7 +89,7 @@ const authReducer = (state = {user: initData.user}, action) => {
                 ]
             };
             if (action.newAvatar) {
-                action.newAvatar.path = `${baseUrl}/${action.newAvatar.path}`;
+                // action.newAvatar.path = `${baseUrl}/${action.newAvatar.path}`;
                 let currentAvatarIndex = avatars.data
                     .findIndex(avatar => avatar.id === action.newAvatar.id);
                 if (currentAvatarIndex > -1) {
@@ -114,7 +114,7 @@ const authReducer = (state = {user: initData.user}, action) => {
                 }
             });
 
-            action.newAvatar.path = `${baseUrl}/${action.newAvatar.path}`;
+            // action.newAvatar.path = `${baseUrl}/${action.newAvatar.path}`;
             let currentAvatarIndex = avatars.data
                 .find(avatar => avatar.id === action.newAvatar.id);
             if (currentAvatarIndex > -1) {
