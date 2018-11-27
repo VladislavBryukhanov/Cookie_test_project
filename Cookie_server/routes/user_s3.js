@@ -61,8 +61,8 @@ router.put('/editProfile', upload.array('avatars', 12), async(request, response)
     if (request.files.length > 0) {
         let avatars = [];
 
-        let uploadPromises = [];
-        for (let avatar of request.files) {
+        const uploadPromises = [];
+        request.files.forEach(avatar => {
             let params = {
                 Body: avatar.buffer,
                 Bucket: myBucket,
@@ -71,16 +71,14 @@ router.put('/editProfile', upload.array('avatars', 12), async(request, response)
 
             uploadPromises.push(
                 s3.upload(params, options).promise()
-                    .then(async () => {
-                        delete params.Body;
-                        let url = await s3.getSignedUrl('getObject', params);
+                    .then((res) => {
                         avatars.push({
-                            path: url,
                             isCurrentAvatar: false,
-                            key: params.Key
+                            key: params.Key,
+                            path: res.Location
                         });
                     }));
-        }
+        });
         await Promise.all(uploadPromises);
 
         let user = await User.findOne({
